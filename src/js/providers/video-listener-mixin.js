@@ -184,8 +184,9 @@ const VideoListenerMixin = {
     },
 
     error() {
-        const { video } = this;
-        const errorCode = (video.error && video.error.code) || -1;
+        const video = this.video;
+        const error = video.error;
+        const errorCode = (error && error.code) || -1;
         // Error code 2 from the video element is a network error
         let code = HTML5_BASE_MEDIA_ERROR;
         let key = MSG_CANT_PLAY_VIDEO;
@@ -193,6 +194,7 @@ const VideoListenerMixin = {
         if (errorCode === 1) {
             code += errorCode;
         } else if (errorCode === 2) {
+            // MSG_BAD_CONNECTION only should apply to !navigator.online
             key = MSG_BAD_CONNECTION;
             code = HTML5_NETWORK_ERROR;
         } else if (errorCode === 3 || errorCode === 4) {
@@ -206,7 +208,7 @@ const VideoListenerMixin = {
 
         this.trigger(
             MEDIA_ERROR,
-            new PlayerError(key, code, this.video.error)
+            new PlayerError(key, code, error)
         );
     }
 };
